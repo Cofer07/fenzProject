@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Fenz</title>
+  <link rel="stylesheet" href="stylesheet2.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+  <img src="logo2.png" alt="Fenz Logo" class="logo-header">
+</header>
+<main>
+  <div class="contact-form-container">
+    <h2>Contact Us</h2>
+    <form id="contactForm">
+      <input type="text" name="username" placeholder="Your Username" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+</main>
+<script>
+  $(document).ready(function() {
+    $('#contactForm').on('submit', function(e) {
+      e.preventDefault();
+
+      var contactData = {
+        name: $('input[name="name"]').val(),
+        email: $('input[name="email"]').val(),
+        message: $('textarea[name="message"]').val()
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: '/api/contact',
+        contentType: 'application/json',
+        data: JSON.stringify(contactData),
+        success: function(response) {
+          alert('Thank you for contacting us! We will get back to you soon.');
+        },
+        error: function(xhr) {
+          var errorMessage = xhr.responseJSON ? xhr.responseJSON.join("; ") : "Something went wrong, please try again.";
+          alert(errorMessage);
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
