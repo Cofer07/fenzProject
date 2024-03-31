@@ -10,6 +10,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "online_user")
 public class User {
 
     @Id

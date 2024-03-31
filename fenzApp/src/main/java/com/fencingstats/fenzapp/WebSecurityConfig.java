@@ -1,40 +1,34 @@
 package com.fencingstats.fenzapp;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/html/**").permitAll()
-                        .requestMatchers("/login", "/signup").permitAll()
+                        .requestMatchers("/**.css", "/**.js", "/**.png").permitAll()
+                        .requestMatchers("/", "/index.html", "/signup.html").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/ContactUs", true)
-                .failureUrl("/login?error=true").permitAll()
-                .and()
+//                .loginPage("/login")
+//                .defaultSuccessUrl("/ContactUs", true)
+//                .failureUrl("/login?error=true").permitAll()
+//                .and()
                 .logout()
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .permitAll()
                 .and()
                 .authenticationProvider(authenticationProvider());
 
@@ -67,17 +61,19 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    @Bean
+    public UserDetailsService userDetailsService() {
+    	return new UserDetailsServiceImpl();
+    }
 
     public WebSecurityConfig() {
         super();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
